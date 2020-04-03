@@ -95,11 +95,13 @@ int main(int argc, char const *argv[])
         perror("Semaphore initialization failed");
         exit(EXIT_FAILURE);
     }
+
     res = sem_init(&bin_sem2, 0, 0); /*initialize binary sempahore*/
     if (res != 0) {
         perror("Semaphore initialization failed");
         exit(EXIT_FAILURE);
     }
+
     sem_post(&bin_sem); /*post semaphore to allow writer to start*/
 
     res = pthread_create(&prod, NULL, write_data, NULL);
@@ -164,7 +166,7 @@ void *write_data(void *param)
 
 		long unsigned int csum = ip_checksum(total_num, strlen(total_num));
 		sprintf(ptr, "%lx", csum); /*write checksum to the last 2 bytes of shared memory*/
-		ptr += strlen(curr_num);
+		ptr += 8; /*length of the checksum*/
 		printf("Producer wrote '%s%lx' to buffer.\n", total_num, csum);
 		sem_post(&bin_sem2); /*post semaphore to let consumer read*/
 	}
