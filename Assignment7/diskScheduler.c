@@ -44,7 +44,7 @@ clook: 9997
 
 const int MIN_CYL = 0;
 const int MAX_CYL = 5000;
-const int NUM_REQUESTS = 10;
+const int NUM_REQUESTS = 1000;
 
 int* find_closest(int head, int requests[]) {
 	/*set closest distance to be max size of cylinders
@@ -332,44 +332,43 @@ int clook(int head, int requests[]) {
 
 int main(int argc, char const *argv[])
 {
-	// FILE *cylinder_requests;
-	// char line[32];
-	// int i = 0;
-	// int address = -1;
+	FILE *cylinder_requests;
+	char line[32];
+	int i = 0;
+	int address = -1;
 
-	// if (argc != 3) { //check if right num of args provided
-	//     printf("You provided %i argument(s), %i required.\n", argc, 3);
-	//     return -1;
-	// }
+	if (argc != 3) { //check if right num of args provided
+	    printf("You provided %i argument(s), %i required.\n", argc, 3);
+	    return -1;
+	}
 
-	// int head = atoi(argv[1]);
-	// if (head <= 0) {
-	// 	printf("Enter a non-negative number for initial cylinder position.\n");
-	// 	return -1;
-	// }
+	int head = atoi(argv[1]);
+	if (head <= 0) {
+		printf("Enter a non-negative number for initial cylinder position.\n");
+		return -1;
+	}
 
 
-	// cylinder_requests = fopen(argv[2], "r");
-	// if (cylinder_requests == NULL) {
-	// 	 printf("Error %i: %s\n", errno, strerror(errno));
-	// 	 return -1;
-	// }
+	cylinder_requests = fopen(argv[2], "r");
+	if (cylinder_requests == NULL) {
+		 printf("Error %i: %s\n", errno, strerror(errno));
+		 return -1;
+	}
 
-	// int *arr = (int*) malloc(NUM_REQUESTS * sizeof(int));
+	int *arr = (int*) malloc(NUM_REQUESTS * sizeof(int));
 
-	// /*read line by line and store value in arr*/
-	// while(fgets(line, 32, cylinder_requests)) {
-	// 	address = atoi(line);
-	// 	if (i >= NUM_REQUESTS) {
-	// 		break;
-	// 	}
-	// 	arr[i] = address;
-	// 	i++;
-	// }
+	/*read line by line and store value in arr*/
+	while(fgets(line, 32, cylinder_requests)) {
+		address = atoi(line);
+		if (i >= NUM_REQUESTS) {
+			break;
+		}
+		arr[i] = address;
+		i++;
+	}
 
-	// fclose(cylinder_requests);
-	int arr[10] = {2069, 1212, 2296, 2800, 544, 1618, 356, 1523, 4965, 3681};
-	int head = 2150;
+	fclose(cylinder_requests);
+
 	int res = fcfs(head, arr);
 	printf("fcfs: %i\n", res);
 
@@ -388,6 +387,6 @@ int main(int argc, char const *argv[])
 	res = clook(head, arr);
 	printf("clook: %i\n", res);
 
-	// free(arr);
+	free(arr);
 	return 0;
 }
