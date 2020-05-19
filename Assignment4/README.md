@@ -18,5 +18,5 @@ A C program that creates two threads. The first thread is the consumer thread th
 
 ### Notes
 - Maximum memory size is limited to 64000
-- Consumer thread reads shared memory buffer of 30 bytes, calculates the checksum based on the 30 bytes, and compares that with the value stored in the shared memory buffer to ensure that data did not get corrupted\
+- Consumer thread reads shared memory buffer of 30 bytes, calculates the checksum based on the 30 bytes, and compares that with the value stored in the shared memory buffer to ensure that data did not get corrupted
 - This process happens n times (given by the 3rd command line argument)
