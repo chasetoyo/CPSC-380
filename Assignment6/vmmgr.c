@@ -113,76 +113,71 @@ int main(int argc, char const *argv[])
 	int free_page = 0, free_index = 0, num_address = 0, curr_page = -1;
 
 	char line[32];
-		while(fgets(line, 32, address_file)) {
-		int address = atoi(line);
-		printf("%i\n", address);
-	}
 	/*read in logical addresses*/
-	// while(fgets(line, 32, address_file)) {
-	// 	/*convert string to int*/
-	// 	int address = atoi(line);
-	// 	printf("%i\n", address);
+	while(fgets(line, 32, address_file)) {
+		/*convert string to int*/
+		int address = atoi(line);
 
-	// 	/*extract from logical address*/
-	// 	int page = get_page(address);
-	// 	int offset = get_offset(address);
-	// 	int frame = page_table[page];
+		/*extract from logical address*/
+		int page = get_page(address);
+		int offset = get_offset(address);
+		int frame = page_table[page];
 
-	// 	/*consult tlb*/
-	// 	for (int i = 0; i < 16; ++i) {
-	// 		if (tlb[i].page == page) {
-	// 			frame = tlb[i].frame;
-	// 			++hit;
-	// 			break;
-	// 		}
-	// 	}
+		/*consult tlb*/
+		for (int i = 0; i < 16; ++i) {
+			if (tlb[i].page == page) {
+				frame = tlb[i].frame;
+				++hit;
+				break;
+			}
+		}
 
-	// 	/*page fault*/
-	// 	if (frame == -1) {
-	// 		++pf;
-	// 		frame = free_page;
+		/*page fault*/
+		if (frame == -1) {
+			++pf;
+			frame = free_page;
 
-	// 		/*set file pointer offset*/
-	// 		fseek(backing_store, page, SEEK_SET);
-	// 		curr_page = frame*256;
-	// 		fread(mm+curr_page, sizeof(char), 256, backing_store);
+			/*set file pointer offset*/
+			fseek(backing_store, page, SEEK_SET);
+			curr_page = frame*256;
+			fread(mm+curr_page, sizeof(char), 256, backing_store);
 
-	// 		/*update tlb*/
-	// 		tlb_entry* t = (tlb_entry*) malloc(sizeof(tlb_entry));
-	// 		t->page = page;
-	// 		t->frame = frame;
-	// 		tlb[free_index] = *t;
+			/*update tlb*/
+			tlb_entry* t = (tlb_entry*) malloc(sizeof(tlb_entry));
+			t->page = page;
+			t->frame = frame;
+			tlb[free_index] = *t;
 
-	// 		/*update page table with new physical address*/
-	// 		page_table[page] = frame;
+			/*update page table with new physical address*/
+			page_table[page] = frame;
 
-	// 		++free_index;
-	// 		++free_page;
+			++free_index;
+			++free_page;
 
-	// 		/*reset TLB using FIFO*/
-	// 		if (free_index == 15) {
-	// 			free_index = 0;
-	// 		}
-	// 	}
-	// 	++num_address;
-	// 	curr_page = frame*256;
-	// 	int physical = curr_page+offset;
-	// 	char byte = mm[physical];
-	// 	printf("Virtual Address:%-5i || Physical Address: %-5i || Data: %d\n", address, physical, byte);
-	// }
+			/*reset TLB using FIFO*/
+			if (free_index == 15) {
+				free_index = 0;
+			}
+		}
+		++num_address;
+		curr_page = frame*256;
+		int physical = curr_page+offset;
+		char byte = mm[physical];
+		printf("Virtual Address:%-5i || Physical Address: %-5i || Data: %d\n", address, physical, byte);
+	}
 
-	// pf_rate = pf/num_address;
-	// hit_rate = hit/num_address;
+	pf_rate = pf/num_address;
+	hit_rate = hit/num_address;
 
-	// printf("---------------------------------------------------------\n");
-	// printf("Page Faults: %.1f\n", pf);
-	// printf("Page Fault Rate: %.3f\n", pf_rate);
-	// printf("TLB Hits: %.1f\n", hit);
-	// printf("TLB Hit Rate: %.3f\n", hit_rate);
+	printf("---------------------------------------------------------\n");
+	printf("Page Faults: %.1f\n", pf);
+	printf("Page Fault Rate: %.3f\n", pf_rate);
+	printf("TLB Hits: %.1f\n", hit);
+	printf("TLB Hit Rate: %.3f\n", hit_rate);
 
-	// fclose(backing_store);
-	// fclose(address_file);
-	// free(mm);
-	// free(tlb);
+	fclose(backing_store);
+	fclose(address_file);
+	free(mm);
+	free(tlb);
 	return 0;
 }
