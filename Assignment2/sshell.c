@@ -71,7 +71,7 @@ int main()
 		printf("osh> ");
 
 		while (quit1 != 0 && quit2 != 0) {
-			fgets(write_msg, BUFFER_SIZEq, stdin);
+			fgets(write_msg, BUFFER_SIZE, stdin);
 			write_msg[strlen(write_msg)-1] = '\0'; //get rid of newline character for comparison;
 			
 			quit1 = strcmp(write_msg, "q");
