@@ -63,7 +63,6 @@ int main(int argc, char const *argv[])
 	}
 	if (memsize % 32 != 0) {
 		printf("Err. Memory size (%s) should be a multiple of 32.\n", argv[1]);
-		return -1;
 	}
 	if (memsize == 0) { //atoi returns 0 if it fails
 		fprintf(stderr,"Err. Memory size (%s) must be a number.\n", argv[1]);
@@ -84,24 +83,22 @@ int main(int argc, char const *argv[])
 	/* configure the size of the shared memory segment */
 	ftruncate(shm_fd, memsize);
 
-    // res = pthread_mutex_init(&work_mutex, NULL); /*initialize mutex sempahore*/
-    // if (res != 0) {
-    //     perror("Mutex initialization failed");
-    //     exit(EXIT_FAILURE);
-    // }
+    res = pthread_mutex_init(&work_mutex, NULL); /*initialize mutex sempahore*/
+    if (res != 0) {
+        perror("Mutex initialization failed");
+        exit(EXIT_FAILURE);
+    }
 
     res = sem_init(&bin_sem, 0, 0); /*initialize binary sempahore*/
     if (res != 0) {
         perror("Semaphore initialization failed");
         exit(EXIT_FAILURE);
     }
-
     res = sem_init(&bin_sem2, 0, 0); /*initialize binary sempahore*/
     if (res != 0) {
         perror("Semaphore initialization failed");
         exit(EXIT_FAILURE);
     }
-
     sem_post(&bin_sem); /*post semaphore to allow writer to start*/
 
     res = pthread_create(&prod, NULL, write_data, NULL);
@@ -128,9 +125,10 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // pthread_mutex_destroy(&work_mutex); /*destroy bin semaphore and mutex*/
+    pthread_mutex_destroy(&work_mutex); /*destroy bin semaphore and mutex*/
     sem_destroy(&bin_sem);
-    sem_destroy(&bin_sem2);
+    exit(EXIT_SUCCESS);
+
 	return 0;
 }
 
@@ -166,7 +164,7 @@ void *write_data(void *param)
 
 		long unsigned int csum = ip_checksum(total_num, strlen(total_num));
 		sprintf(ptr, "%lx", csum); /*write checksum to the last 2 bytes of shared memory*/
-		ptr += 8; /*length of the checksum*/
+		ptr += strlen(curr_num);
 		printf("Producer wrote '%s%lx' to buffer.\n", total_num, csum);
 		sem_post(&bin_sem2); /*post semaphore to let consumer read*/
 	}
